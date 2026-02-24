@@ -1,0 +1,23 @@
+# Base image CPU — không thuộc app, không chứa source code.
+# Chỉ: Python 3.11 + PyTorch CPU + system libs (OpenCV). Push lên Docker Hub, client chỉ thấy image này.
+# Build: docker build --platform=linux/amd64 -f Dockerfile.cpu -t halay08/pytorch:2.4.1-cpu-py3.11-slim .
+# Push: docker push halay08/pytorch:2.4.1-cpu-py3.11-slim
+FROM python:3.11-slim
+
+WORKDIR /app
+
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DEFAULT_TIMEOUT=300
+
+# System deps cho cv2 (libGL, libglib) + utilities
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libgl1 libglib2.0-0 \
+    curl ca-certificates wget \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install CPU-only PyTorch (không có CUDA — nhẹ hơn ~1.5GB so với bản CUDA)
+RUN pip install --no-cache-dir --index-url https://download.pytorch.org/whl/cpu \
+    "torch>=2.4.1,<2.5.0" \
+    "torchvision>=0.19.1,<0.20.0"
