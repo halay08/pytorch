@@ -2,18 +2,32 @@
 
 PyTorch Docker image with CUDA 12.8 and cuDNN 9 (runtime). Suitable for GPU training and inference.
 
-## Image
+## Images
+
+| Tag | Description |
+|-----|-------------|
+| `2.9.1-cuda12.6-cudnn9-runtime` | PyTorch + CUDA + system libs (OpenCV). Generic base. |
+| `2.9.1-cuda12.6-cudnn9-yolo11m` | Same as above + YOLO weights (yolo11m.pt, yolo26n.pt) in `/app/weights` for Ultralytics offline (e.g. ECS training). |
 
 - **Repository:** `halay08/pytorch`
-- **Tag:** `2.10.0-cuda12.8-cudnn9-runtime`
 - **Base:** Built from [pytorch/pytorch](https://hub.docker.com/r/pytorch/pytorch) official image
-- **Size:** ~4.2 GB
+
+## Build (base images)
+
+```bash
+cd pytorch-docker
+# Generic GPU base (no YOLO)
+docker build --platform=linux/amd64 -f Dockerfile.gpu -t halay08/pytorch:2.9.1-cuda12.6-cudnn9-runtime .
+# GPU + YOLO weights (for sphere-ai training)
+docker build --platform=linux/amd64 -f Dockerfile.gpu.yolo11m -t halay08/pytorch:2.9.1-cuda12.6-cudnn9-yolo11m .
+docker push halay08/pytorch:2.9.1-cuda12.6-cudnn9-yolo11m
+```
 
 ## Quick start
 
 ```bash
-docker pull halay08/pytorch:2.10.0-cuda12.8-cudnn9-runtime
-docker run --gpus all -it halay08/pytorch:2.10.0-cuda12.8-cudnn9-runtime python -c "import torch; print(torch.cuda.is_available())"
+docker pull halay08/pytorch:2.9.1-cuda12.6-cudnn9-runtime
+docker run --gpus all -it halay08/pytorch:2.9.1-cuda12.6-cudnn9-runtime python -c "import torch; print(torch.cuda.is_available())"
 ```
 
 ## Use as base image
