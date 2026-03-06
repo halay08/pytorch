@@ -1,8 +1,8 @@
 # Base image thuần runtime — không thuộc app, không dùng pyproject.toml.
 # Chỉ: PyTorch CUDA + system libs (OpenCV). Push lên Docker Hub, client chỉ thấy image này.
 # CUDA 12.6 thay 13.0 để khớp driver ECS g4dn (AL2 GPU AMI); 13.0 gây "NVIDIA driver too old".
-# Build: docker build --platform=linux/amd64 -f pytorch-docker/Dockerfile -t halay08/pytorch:2.9.1-cuda12.6-cudnn9-runtime .
-# Push: docker push halay08/pytorch:2.9.1-cuda12.6-cudnn9-runtime
+# Build: docker build --platform=linux/amd64 -f pytorch-docker/Dockerfile -t movahub/pytorch:2.9.1-cuda12.6-cudnn9-runtime .
+# Push: docker push movahub/pytorch:2.9.1-cuda12.6-cudnn9-runtime
 ARG PYTHON_BASE=pytorch/pytorch:2.9.1-cuda12.6-cudnn9-runtime
 FROM ${PYTHON_BASE}
 
@@ -17,4 +17,5 @@ ENV PYTHONUNBUFFERED=1 \
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libgl1 libglib2.0-0 \
     curl ca-certificates wget \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && find /usr/local -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true

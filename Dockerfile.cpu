@@ -20,4 +20,5 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Install CPU-only PyTorch (không có CUDA — nhẹ hơn ~1.5GB so với bản CUDA)
 RUN pip install --no-cache-dir --index-url https://download.pytorch.org/whl/cpu \
     "torch>=2.4.1,<2.5.0" \
-    "torchvision>=0.19.1,<0.20.0"
+    "torchvision>=0.19.1,<0.20.0" \
+    && find /usr/local -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
