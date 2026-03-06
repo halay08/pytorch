@@ -1,7 +1,7 @@
 # Base GPU + YOLO weights (yolo26m, yolo26n) cho Ultralytics offline trên ECS.
 # Build: docker build --platform=linux/amd64 -f pytorch-docker/Dockerfile.gpu.yolo26m -t halay08/pytorch:2.9.1-cuda12.6-cudnn9-yolo26m .
 # Push: docker push halay08/pytorch:2.9.1-cuda12.6-cudnn9-yolo26m
-ARG PYTHON_BASE=pytorch/pytorch:2.9.1-cuda12.6-cudnn9-runtime
+ARG PYTHON_BASE=movahub/pytorch:2.9.1-cuda12.6-cudnn9-runtime
 FROM ${PYTHON_BASE}
 
 WORKDIR /app
@@ -11,14 +11,6 @@ ENV PYTHONUNBUFFERED=1 \
     PIP_NO_CACHE_DIR=1 \
     PIP_DEFAULT_TIMEOUT=300 \
     PIP_BREAK_SYSTEM_PACKAGES=1
-
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    libglib2.0-0 \
-    libpq-dev \
-    libgeos-dev \
-    curl ca-certificates wget \
-    && (apt-get install -y --no-install-recommends libgl1 || apt-get install -y --no-install-recommends libgl1-mesa-glx) \
-    && rm -rf /var/lib/apt/lists/*
 
 # YOLO weights tải sẵn để ECS không cần outbound internet (tránh Connection timed out).
 # Ultralytics 8.4.x: yolo26m (detect), yolo26n (AMP check).

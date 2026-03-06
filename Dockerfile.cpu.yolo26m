@@ -1,7 +1,7 @@
 # Base image CPU + YOLO weights (yolo26m, yolo26n) — cho inference worker offline.
 # Build: docker build --platform=linux/amd64 -f Dockerfile.cpu.yolo26m -t movahub/pytorch:cpu-python3.11-yolo26m .
 # Push: docker push movahub/pytorch:cpu-python3.11-yolo26m
-ARG PYTHON_BASE=python:3.11-slim
+ARG PYTHON_BASE=movahub/pytorch:2.4.1-cpu-py3.11-slim
 FROM ${PYTHON_BASE}
 
 WORKDIR /app
@@ -11,21 +11,6 @@ ENV PYTHONUNBUFFERED=1 \
     PIP_NO_CACHE_DIR=1 \
     PIP_DEFAULT_TIMEOUT=300 \
     PIP_BREAK_SYSTEM_PACKAGES=1
-
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    libglib2.0-0 \
-    libpq-dev \
-    libgeos-dev \
-    curl ca-certificates wget \
-    && (apt-get install -y --no-install-recommends libgl1 || apt-get install -y --no-install-recommends libgl1-mesa-glx) \
-    && rm -rf /var/lib/apt/lists/*
-
-# Install CPU-only PyTorch (không có CUDA — nhẹ hơn ~1.5GB so với bản CUDA)
-# Dọn __pycache__ ngay trong layer để giảm size base image (movahub/pytorch).
-RUN pip install --no-cache-dir --index-url https://download.pytorch.org/whl/cpu \
-    "torch>=2.4.1,<2.5.0" \
-    "torchvision>=0.19.1,<0.20.0" \
-    && find /usr/local -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
 
 # YOLO weights tải sẵn để ECS không cần outbound internet (tránh Connection timed out).
 # Ultralytics 8.4.x: yolo26m (detect), yolo26n (AMP check).
