@@ -2,7 +2,7 @@
 # Chỉ: Python 3.11 + PyTorch CPU + system libs (OpenCV). Push lên Docker Hub, client chỉ thấy image này.
 # Build: docker build --platform=linux/amd64 -f Dockerfile.cpu -t halay08/pytorch:2.4.1-cpu-py3.11-slim .
 # Push: docker push halay08/pytorch:2.4.1-cpu-py3.11-slim
-ARG PYTHON_BASE=movahub/pytorch:2.4.1-cpu-py3.11-slim
+ARG PYTHON_BASE=pytorchlab/pytorch:2.4.1-cpu-py3.11-slim
 FROM ${PYTHON_BASE}
 
 WORKDIR /app
@@ -18,8 +18,8 @@ ENV PYTHONUNBUFFERED=1 \
 ENV YOLO_CONFIG_DIR=/app/weights
 ENV YOLO_OFFLINE=1
 ARG YOLO11M_URL=https://github.com/ultralytics/assets/releases/download/v8.4.0/yolo11m.pt
-ARG YOLO26N_URL=https://github.com/ultralytics/assets/releases/download/v8.4.0/yolo26n.pt
+ARG YOLO11N_URL=https://github.com/ultralytics/assets/releases/download/v8.4.0/yolo11n.pt
 RUN mkdir -p /app/weights && \
     curl -sL -o /app/weights/yolo11m.pt "$YOLO11M_URL" && \
-    curl -sL -o /app/weights/yolo26n.pt "$YOLO26N_URL" && \
-    test -s /app/weights/yolo11m.pt && test -s /app/weights/yolo26n.pt
+    curl -sL -o /app/weights/yolo11n.pt "$YOLO11N_URL" && \
+    test -s /app/weights/yolo11m.pt && test -s /app/weights/yolo11n.pt

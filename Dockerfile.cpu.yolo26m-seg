@@ -1,0 +1,31 @@
+# Base image CPU + YOLO segmentation weights (yolo26m-seg, yolo26n-seg) + detection backbone offline.
+# Build: docker build --platform=linux/amd64 -f Dockerfile.cpu.yolo26m-seg -t movahub/pytorch:cpu-python3.11-yolo26m-seg .
+# Push: docker push movahub/pytorch:cpu-python3.11-yolo26m-seg
+ARG PYTHON_BASE=pytorchlab/pytorch:2.4.1-cpu-py3.11-slim
+FROM ${PYTHON_BASE}
+
+WORKDIR /app
+
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DEFAULT_TIMEOUT=300 \
+    PIP_BREAK_SYSTEM_PACKAGES=1
+
+# YOLO weights tải sẵn để ECS không cần outbound internet (tránh Connection timed out).
+# Ultralytics 8.4.x: yolo26m-seg, yolo26n-seg, và backbone detection yolo26n.pt (để tránh runtime download)
+ENV YOLO_CONFIG_DIR=/app/weights
+ENV YOLO_OFFLINE=1
+
+ARG YOLO26M_URL=https://github.com/ultralytics/assets/releases/download/v8.4.0/yolo26m-seg.pt
+ARG YOLO26N_URL=https://github.com/ultralytics/assets/releases/download/v8.4.0/yolo26n-seg.pt
+ARG YOLO26N_PT_URL=https://github.com/ultralytics/assets/releases/download/v8.4.0/yolo26n.pt
+
+RUN mkdir -p /app/weights && \
+    curl -sL -o /app/weights/yolo26m-seg.pt "$YOLO26M_URL" && \
+    curl -sL -o /app/weights/yolo26n-seg.pt "$YOLO26N_URL" && \
+    curl -sL -o /app/weights/yolo26n.pt "$YOLO26N_PT_URL" && \
+    test -s /app/weights/yolo26m-seg.pt && \
+    test -s /app/weights/yolo26n-seg.pt && \
+    test -s /app/weights/yolo26n.pt
+

@@ -1,7 +1,7 @@
 # Base image CPU + YOLO weights (yolo26m, yolo26n) — cho inference worker offline.
 # Build: docker build --platform=linux/amd64 -f Dockerfile.cpu.yolo26m -t movahub/pytorch:cpu-python3.11-yolo26m .
 # Push: docker push movahub/pytorch:cpu-python3.11-yolo26m
-ARG PYTHON_BASE=movahub/pytorch:2.4.1-cpu-py3.11-slim
+ARG PYTHON_BASE=pytorchlab/pytorch:2.4.1-cpu-py3.11-slim
 FROM ${PYTHON_BASE}
 
 WORKDIR /app
