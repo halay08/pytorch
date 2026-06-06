@@ -16,7 +16,8 @@ ENV PYTHONUNBUFFERED=1 \
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libgl1 libglib2.0-0 libpq-dev libgeos-dev \
-    curl ca-certificates wget && \
+    curl ca-certificates wget \
+    gcc python3-dev && \
     (apt-get install -y --no-install-recommends libgl1 || apt-get install -y --no-install-recommends libgl1-mesa-glx) \
     && rm -rf /var/lib/apt/lists/* \
     && find /usr/local -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
